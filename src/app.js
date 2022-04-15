@@ -17,9 +17,9 @@ sequelize
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/api/user", userRouter);
-// app.use("/post", postRouter);
-// app.use("/comment", commentRouter);
+app.use("/api/users", userRouter);
+// app.use("/api/posts", postRouter);
+// app.use("/api/comments", commentRouter);
 
 app.get("/", (req, res) => {
   return res.send("hello");

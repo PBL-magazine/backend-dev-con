@@ -4,10 +4,10 @@ module.exports = class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        user_id: {
-          type: Sequelize.INTEGER,
+        id: {
+          primaryKey: true,
+          type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          unique: true,
         },
         email: {
           type: Sequelize.STRING(30),
@@ -24,13 +24,19 @@ module.exports = class User extends Sequelize.Model {
           allowNull: false,
         },
         role: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
         },
       },
       {
         sequelize,
-        timestamps: false,
+        modelName: "User",
+        tableName: "users",
+        timestamps: false, // createdAt, updatedAt 자동생성
+        paranoid: false, // deletedAt 자동생성
+        underscored: true, // 테이블명, 컬럼명 스네이크 케이스 적용 여부 (false: 케멀케이스)
+        charset: "utf8",
+        collate: "utf8_general_ci",
       }
     );
   }

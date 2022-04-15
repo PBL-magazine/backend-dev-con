@@ -1,0 +1,22 @@
+{
+  "name": "backend-coco",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PBL-magazine/backend-coco.git"
+  },
+  "author": "coco",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PBL-magazine/backend-coco/issues"
+  },
+  "homepage": "https://github.com/PBL-magazine/backend-coco#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}

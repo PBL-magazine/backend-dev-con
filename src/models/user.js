@@ -1,30 +1,32 @@
-const Sequelize = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 
-module.exports = class User extends Sequelize.Model {
+class User extends Model {
   static init(sequelize) {
     return super.init(
       {
-        id: {
+        // TODO: 시퀄라이즈는 id를 기본키로 설정 해준다고 하니 빼봐야 겠음
+        user_id: {
           primaryKey: true,
-          type: Sequelize.INTEGER.UNSIGNED,
+          type: DataTypes.INTEGER.UNSIGNED,
+          autoIncrement: true,
           allowNull: false,
         },
         email: {
-          type: Sequelize.STRING(30),
+          type: DataTypes.STRING(30),
           allowNull: false,
           unique: true,
         },
         nickname: {
-          type: Sequelize.STRING(30),
+          type: DataTypes.STRING(30),
           allowNull: false,
           unique: true,
         },
         password: {
-          type: Sequelize.STRING(200),
+          type: DataTypes.STRING(200),
           allowNull: false,
         },
         role: {
-          type: Sequelize.INTEGER.UNSIGNED,
+          type: DataTypes.INTEGER.UNSIGNED,
           allowNull: false,
         },
       },
@@ -42,4 +44,6 @@ module.exports = class User extends Sequelize.Model {
   }
 
   static associate(db) {}
-};
+}
+
+module.exports = User;

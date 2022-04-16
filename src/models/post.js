@@ -18,6 +18,10 @@ class Post extends Model {
           type: DataTypes.STRING(100),
           allowNull: false,
         },
+        likes: {
+          type: DataTypes.INTEGER.UNSIGNED,
+          defaultValue: 0,
+        },
       },
       {
         sequelize,
@@ -41,6 +45,7 @@ class Post extends Model {
     db.Post.hasMany(db.Like, {
       foreignKey: "post_id",
       sourceKey: "post_id",
+      onDelete: "cascade",
     });
   }
 }

@@ -1,6 +1,7 @@
 const Post = require("../models/post");
 const User = require("../models/user");
 const Like = require("../models/like");
+const { Sequelize } = require("sequelize");
 
 const getPosts = async (req, res) => {
   try {
@@ -111,11 +112,21 @@ const toggleLike = async (req, res) => {
   const { post_id } = req.params;
 
   try {
+    const post = await Post.findOne({ post_id });
     const like = await Like.findOne({ where: { user_id, post_id } });
     if (like) {
-      await Like.destroy({ where: { user_id, post_id } });
+      post.set({
+        likes: Sequelize.literal("likes - 1"),
+      });
+      await Promise.all([
+        Like.destroy({ where: { user_id, post_id } }),
+        post.save(),
+      ]);
     } else {
-      await Like.create({ user_id, post_id });
+      post.set({
+        likes: Sequelize.literal("likes + 1"),
+      });
+      await Promise.all([Like.create({ user_id, post_id }), post.save()]);
     }
 
     return res.json({ ok: true });

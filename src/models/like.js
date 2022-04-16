@@ -25,6 +25,7 @@ class Like extends Model {
     db.Like.belongsTo(db.Post, {
       foreignKey: "post_id",
       targetKey: "post_id",
+      onDelete: "cascade",
     });
   }
 }

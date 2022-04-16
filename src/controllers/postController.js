@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const User = require("../models/user");
+const Like = require("../models/like");
 
 const getPosts = async (req, res) => {
   try {
@@ -103,4 +104,32 @@ const removePost = async (req, res) => {
   }
 };
 
-module.exports = { getPosts, uploadPost, detailPost, editPost, removePost };
+const toggleLike = async (req, res) => {
+  const {
+    user: { user_id },
+  } = res.locals;
+  const { post_id } = req.params;
+
+  try {
+    const like = await Like.findOne({ where: { user_id, post_id } });
+    if (like) {
+      await Like.destroy({ where: { user_id, post_id } });
+    } else {
+      await Like.create({ user_id, post_id });
+    }
+
+    return res.json({ ok: true });
+  } catch (error) {
+    // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request
+    return res.status(400).json({ ok: false, message: error.message });
+  }
+};
+
+module.exports = {
+  getPosts,
+  uploadPost,
+  detailPost,
+  editPost,
+  removePost,
+  toggleLike,
+};

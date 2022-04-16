@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const { Op } = require("sequelize");
 const dotenv = require("dotenv");
 const User = require("../models/user");
 
@@ -10,16 +9,24 @@ const signup = async (req, res) => {
     const { email, nickname, password } = req.body;
     const role = 0;
 
-    const existsUsers = await User.findAll({
-      where: {
-        [Op.or]: [{ email }, { nickname }],
-      },
+    const checkEmail = await User.findOne({
+      where: { email },
     });
-    if (existsUsers.length) {
-      // 비밀번호를 잘못 요청한 경우 => 409 Conflict
+    if (checkEmail !== null) {
+      // 이메일 사용중 => 409 Conflict
       return res.status(409).json({
         ok: false,
-        message: "이메일 또는 닉네임이 이미 사용중입니다.",
+        message: "이메일이 이미 사용중입니다.",
+      });
+    }
+    const checkNickname = await User.findOne({
+      where: { nickname },
+    });
+    if (checkNickname !== null) {
+      // 닉네임 사용중 => 409 Conflict
+      return res.status(409).json({
+        ok: false,
+        message: "닉네임이 이미 사용중입니다.",
       });
     }
 

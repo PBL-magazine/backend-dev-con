@@ -62,6 +62,7 @@ const signinValidator = (req, res, next) => {
 const postValidator = (req, res, next) => {
   const postSchema = Joi.object({
     content: Joi.string().required(),
+    user_id: Joi.number(),
   });
 
   const { error, value } = postSchema.validate(req.body);

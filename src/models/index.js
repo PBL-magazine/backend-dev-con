@@ -15,8 +15,7 @@ const sequelize = new Sequelize(
 db.sequelize = sequelize;
 db.User = User;
 
-User.init(sequelize);
-
+User.init(sequelize); // User 모델의 static.init 호출 => 테이블이 모델로 연결
 User.associate(db);
 
 module.exports = db;

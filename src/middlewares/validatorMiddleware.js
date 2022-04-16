@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-const signupMiddleware = (req, res, next) => {
+const signupValidator = (req, res, next) => {
   // TODO: [완료] 비밀번호에 닉네임과 같은 값이 포함된 경우 에러 던지기
   const { nickname, password } = req.body;
   const checkPassIncludesNick = (pw) => {
@@ -38,7 +38,7 @@ const signupMiddleware = (req, res, next) => {
   }
 };
 
-const signinMiddleware = (req, res, next) => {
+const signinValidator = (req, res, next) => {
   const signinSchema = Joi.object({
     email: Joi.string().email().max(30).required(),
     password: Joi.string().min(4).max(200).required(),
@@ -59,4 +59,20 @@ const signinMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = { signupMiddleware, signinMiddleware };
+const postValidator = (req, res, next) => {
+  const postSchema = Joi.object({
+    content: Joi.string().required(),
+  });
+
+  const { error, value } = postSchema.validate(req.body);
+
+  if (error) {
+    // 내용이 string이 아닌경우 => 400 Bad Request (string이 아닌경우가 있나?)
+    return res.status(400).send({ ok: false, message: error.message });
+  } else {
+    req.body = value;
+    next();
+  }
+};
+
+module.exports = { signupValidator, signinValidator, postValidator };

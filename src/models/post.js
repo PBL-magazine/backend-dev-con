@@ -38,6 +38,10 @@ class Post extends Model {
       foreignKey: "user_id",
       targetKey: "user_id",
     });
+    db.Post.hasMany(db.Like, {
+      foreignKey: "post_id",
+      sourceKey: "post_id",
+    });
   }
 }
 

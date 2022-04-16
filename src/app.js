@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 sequelize
-  .sync({ force: true }) // TODO: false로 수정
+  .sync({ force: true }) // TODO: true => 테이블 드랍후 재생성, 배포시 false로 수정
   .then(() => {
     console.log("DB connected");
   })

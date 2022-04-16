@@ -11,7 +11,7 @@ const protectorMiddleware = (req, res, next) => {
   if (!authToken || authType !== "Bearer") {
     // 로그인 확인 불가 => 401 Unauthorized
     return res.status(401).send({
-      errorMessage: "로그인 후 이용 가능한 기능입니다.",
+      errorMessage: "로그인이 필요합니다.",
     });
   }
 

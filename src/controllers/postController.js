@@ -1,5 +1,3 @@
-const jwt = require("jsonwebtoken");
-const { Op } = require("sequelize");
 const Post = require("../models/post");
 const User = require("../models/user");
 
@@ -23,7 +21,7 @@ const getPosts = async (req, res) => {
 };
 
 const uploadPost = async (req, res) => {
-  const { user } = res.locals;
+  // const { user } = res.locals;
   const user_id = 1;
   const { content } = req.body;
   const { path: image } = req.file;

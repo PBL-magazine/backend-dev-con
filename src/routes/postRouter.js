@@ -10,16 +10,17 @@ const {
   removePost,
 } = require("../controllers/postController");
 const { postValidator } = require("../middlewares/validatorMiddleware");
-const protectorMiddleware = require("../middlewares/protectorMiddleware");
+const { protectorMiddleware } = require("../middlewares/protectorMiddleware");
 
 postRouter
   .route("/")
   .get(getPosts)
-  .post(protectorMiddleware, postValidator, upload.single("image"), uploadPost);
+  .post(protectorMiddleware, upload.single("image"), postValidator, uploadPost);
+// .post(protectorMiddleware, postValidator, upload.single("image"), uploadPost);
 postRouter
   .route("/:post_id")
   .get(detailPost)
-  .patch(protectorMiddleware, postValidator, upload.single("image"), editPost)
+  .patch(protectorMiddleware, upload.single("image"), postValidator, editPost)
   .delete(protectorMiddleware, removePost);
 
 module.exports = postRouter;

@@ -4,14 +4,18 @@ const Like = require("../models/like");
 
 const getPosts = async (req, res) => {
   try {
-    const allPosts = await Post.findAll({
-      attributes: { exclude: ["user_id", "deletedAt"] },
-      include: {
-        model: User,
-        as: "author",
-        attributes: ["user_id", "email", "nickname", "role"],
-      },
-    });
+    // 포스트, 라이크 테이블 조회를 병렬적으로 처리하기 위해 Promise.all 적용
+    const [allPosts, allLikes] = await Promise.all([
+      Post.findAll({
+        attributes: { exclude: ["user_id", "deletedAt"] },
+        include: {
+          model: User,
+          as: "author",
+          attributes: ["user_id", "email", "nickname", "role"],
+        },
+      }),
+      Like.findAll({}),
+    ]);
 
     // 좋아요 수 포스트에 저장하기
     // 1. 좋아요 테이블 생성
@@ -19,7 +23,7 @@ const getPosts = async (req, res) => {
     // 3. 포스트 테이블 돌면서, post_id 별 좋아요 count 할당
     const likesTable = {}; // { '1': 1 }
     // TODO: 종아요의 주인인지 아닌지도 판단할 수 있게 좋아요 주인id도?
-    const allLikes = await Like.findAll({});
+
     allLikes.forEach((like) => {
       if (!likesTable[like.post_id]) {
         likesTable[like.post_id] = 1;

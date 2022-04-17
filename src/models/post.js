@@ -18,10 +18,6 @@ class Post extends Model {
           type: DataTypes.STRING(100),
           allowNull: false,
         },
-        likes: {
-          type: DataTypes.INTEGER.UNSIGNED,
-          defaultValue: 0,
-        },
       },
       {
         sequelize,

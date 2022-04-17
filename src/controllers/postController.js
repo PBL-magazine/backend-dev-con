@@ -1,11 +1,10 @@
 const Post = require("../models/post");
 const User = require("../models/user");
 const Like = require("../models/like");
-const { Sequelize } = require("sequelize");
 
 const getPosts = async (req, res) => {
   try {
-    const posts = await Post.findAll({
+    const allPosts = await Post.findAll({
       attributes: { exclude: ["user_id", "deletedAt"] },
       include: {
         model: User,
@@ -14,8 +13,26 @@ const getPosts = async (req, res) => {
       },
     });
 
-    // TODO: likes 보내줘야함
-    return res.json({ ok: true, posts });
+    // 좋아요 수 포스트에 저장하기
+    // 1. 좋아요 테이블 생성
+    // 2. 좋아요 테이블 돌면서, 좋아요 테이블에 post_id 별로 좋아요 수 count 저장
+    // 3. 포스트 테이블 돌면서, post_id 별 좋아요 count 할당
+    const likesTable = {}; // { '1': 1 }
+    // TODO: 종아요의 주인인지 아닌지도 판단할 수 있게 좋아요 주인id도?
+    const allLikes = await Like.findAll({});
+    allLikes.forEach((like) => {
+      if (!likesTable[like.post_id]) {
+        likesTable[like.post_id] = 1;
+      } else {
+        likesTable[like.post_id] += 1;
+      }
+    });
+
+    allPosts.map((post) => {
+      post.dataValues.likes = likesTable[String(post.dataValues.post_id)];
+    });
+
+    return res.json({ ok: true, posts: allPosts });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request
     return res.status(400).json({ ok: false, message: error.message });
@@ -59,6 +76,7 @@ const detailPost = async (req, res) => {
         .json({ ok: false, message: "게시글이 존재하지 않습니다." });
     }
 
+    post.dataValues.likes = await Like.count({ where: { post_id } });
     return res.json({ ok: true, post });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request
@@ -112,23 +130,12 @@ const toggleLike = async (req, res) => {
   const { post_id } = req.params;
 
   try {
-    const post = await Post.findOne({ post_id });
     const like = await Like.findOne({ where: { user_id, post_id } });
     if (like) {
-      post.set({
-        likes: Sequelize.literal("likes - 1"),
-      });
-      await Promise.all([
-        Like.destroy({ where: { user_id, post_id } }),
-        post.save(),
-      ]);
+      await Like.destroy({ where: { user_id, post_id } });
     } else {
-      post.set({
-        likes: Sequelize.literal("likes + 1"),
-      });
-      await Promise.all([Like.create({ user_id, post_id }), post.save()]);
+      await Like.create({ user_id, post_id });
     }
-
     return res.json({ ok: true });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request

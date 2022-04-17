@@ -3,6 +3,9 @@ const User = require("../models/user");
 const Like = require("../models/like");
 
 const getPosts = async (req, res) => {
+  const { user } = res.locals;
+  const user_id = user ? user.user_id : 0;
+
   try {
     // 포스트, 라이크 테이블 조회를 병렬적으로 처리하기 위해 Promise.all 적용
     const [allPosts, allLikes] = await Promise.all([
@@ -22,9 +25,17 @@ const getPosts = async (req, res) => {
     // 2. 좋아요 테이블 돌면서, 좋아요 테이블에 post_id 별로 좋아요 수 count 저장
     // 3. 포스트 테이블 돌면서, post_id 별 좋아요 count 할당
     const likesTable = {}; // { '1': 1 }
-    // TODO: 종아요의 주인인지 아닌지도 판단할 수 있게 좋아요 주인id도?
+    // 좋아요한 사람 포스트에 저장하기
+    // 1. 좋아요한 사람 테이블 생성
+    // 2. 좋아요한 사람 테이블 돌면서, 로그인한 유저가 좋아요한 유저랑 같으면 post_id에 true 저장
+    // 3. 포스트 테이블 돌면서, post_id가 true면 liker에 true 할당
+    const likerTable = {};
 
     allLikes.forEach((like) => {
+      if (like.user_id === user_id) {
+        likerTable[like.post_id] = true;
+      }
+
       if (!likesTable[like.post_id]) {
         likesTable[like.post_id] = 1;
       } else {
@@ -34,6 +45,7 @@ const getPosts = async (req, res) => {
 
     allPosts.map((post) => {
       post.dataValues.likes = likesTable[String(post.dataValues.post_id)];
+      post.dataValues.liker = likerTable[String(post.dataValues.post_id)];
     });
 
     return res.json({ ok: true, posts: allPosts });
@@ -44,8 +56,9 @@ const getPosts = async (req, res) => {
 };
 
 const uploadPost = async (req, res) => {
-  // const { user } = res.locals;
-  const user_id = 1;
+  const {
+    user: { user_id },
+  } = res.locals;
   const { content } = req.body;
   const { path: image } = req.file;
 
@@ -61,26 +74,40 @@ const uploadPost = async (req, res) => {
 };
 
 const detailPost = async (req, res) => {
+  const { user } = res.locals;
+  const user_id = user ? user.user_id : 0;
   const { post_id } = req.params;
+
   try {
-    const post = await Post.findOne({
-      attributes: { exclude: ["user_id", "deletedAt"] },
-      where: {
-        post_id,
-      },
-      include: {
-        model: User,
-        as: "author",
-        attributes: ["user_id", "email", "nickname", "role"],
-      },
-    });
+    const [post, allLikes] = await Promise.all([
+      Post.findOne({
+        attributes: { exclude: ["user_id", "deletedAt"] },
+        where: {
+          post_id,
+        },
+        include: {
+          model: User,
+          as: "author",
+          attributes: ["user_id", "email", "nickname", "role"],
+        },
+      }),
+      Like.findAll({ where: { post_id } }),
+    ]);
+
     if (!post) {
       return res
         .status(400)
         .json({ ok: false, message: "게시글이 존재하지 않습니다." });
     }
 
-    post.dataValues.likes = await Like.count({ where: { post_id } });
+    // 좋아요 수, 좋아요한 사람인지 여부 post에 저장
+    post.dataValues.likes = allLikes.length;
+    allLikes.forEach((like) => {
+      if (like.dataValues.user_id === user_id) {
+        post.dataValues.liker = true;
+      }
+    });
+
     return res.json({ ok: true, post });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request

@@ -21,7 +21,7 @@ const protectorMiddleware = (req, res, next) => {
       res.locals.user = user;
       next();
     });
-  } catch (err) {
+  } catch (error) {
     // 해당 유저 검증 불가 => 401 Unauthorized
     return res.status(401).send({
       errorMessage: "로그인이 필요합니다.",
@@ -44,4 +44,28 @@ const notSigninMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = { protectorMiddleware, notSigninMiddleware };
+const isLoggedInMiddleware = (req, res, next) => {
+  const { authorization } = req.headers;
+  const [authType, authToken] = (authorization || "").split(" ");
+
+  if (!authToken || authType !== "Bearer") {
+    return next();
+  }
+
+  try {
+    const { userId } = jwt.verify(authToken, process.env.JWT_SECRET);
+    User.findByPk(userId).then((user) => {
+      res.locals.user = user;
+      return next();
+    });
+  } catch (error) {
+    // 해당 유저 검증 불가 => 401 Unauthorized
+    return res.status(401).json({ ok: false, message: error.message });
+  }
+};
+
+module.exports = {
+  protectorMiddleware,
+  notSigninMiddleware,
+  isLoggedInMiddleware,
+};

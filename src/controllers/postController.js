@@ -3,9 +3,6 @@ const User = require("../models/user");
 const Like = require("../models/like");
 
 const getPosts = async (req, res) => {
-  const { user } = res.locals;
-  const user_id = user ? user.user_id : 0;
-
   try {
     // 포스트, 라이크 테이블 조회를 병렬적으로 처리하기 위해 Promise.all 적용
     const [allPosts, allLikes] = await Promise.all([
@@ -22,30 +19,20 @@ const getPosts = async (req, res) => {
 
     // 좋아요 수 포스트에 저장하기
     // 1. 좋아요 테이블 생성
-    // 2. 좋아요 테이블 돌면서, 좋아요 테이블에 post_id 별로 좋아요 수 count 저장
-    // 3. 포스트 테이블 돌면서, post_id 별 좋아요 count 할당
-    const likesTable = {}; // { '1': 1 }
-    // 좋아요한 사람 포스트에 저장하기
-    // 1. 좋아요한 사람 테이블 생성
-    // 2. 좋아요한 사람 테이블 돌면서, 로그인한 유저가 좋아요한 유저랑 같으면 post_id에 true 저장
-    // 3. 포스트 테이블 돌면서, post_id가 true면 liker에 true 할당
-    const likerTable = {};
+    // 2. 좋아요 테이블 돌면서, 좋아요 테이블에 post_id 별 좋아요 로우를 배열로 저장
+    // 3. 포스트 테이블 돌면서, post_id 별 좋아요 배열을 저장
+    const likesTable = {}; // { '1': [like] }
 
     allLikes.forEach((like) => {
-      if (like.user_id === user_id) {
-        likerTable[like.post_id] = true;
-      }
-
       if (!likesTable[like.post_id]) {
-        likesTable[like.post_id] = 1;
+        likesTable[like.post_id] = [like];
       } else {
-        likesTable[like.post_id] += 1;
+        likesTable[like.post_id].push(like);
       }
     });
 
     allPosts.forEach((post) => {
       post.dataValues.likes = likesTable[String(post.dataValues.post_id)];
-      post.dataValues.liker = likerTable[String(post.dataValues.post_id)];
     });
 
     return res.json({ ok: true, posts: allPosts });
@@ -74,12 +61,10 @@ const uploadPost = async (req, res) => {
 };
 
 const detailPost = async (req, res) => {
-  const { user } = res.locals;
-  const user_id = user ? user.user_id : 0;
   const { post_id } = req.params;
 
   try {
-    const [post, allLikes] = await Promise.all([
+    const [post, likes] = await Promise.all([
       Post.findOne({
         attributes: { exclude: ["user_id", "deletedAt"] },
         where: {
@@ -101,12 +86,7 @@ const detailPost = async (req, res) => {
     }
 
     // 좋아요 수, 좋아요한 사람인지 여부 post에 저장
-    post.dataValues.likes = allLikes.length;
-    allLikes.forEach((like) => {
-      if (like.dataValues.user_id === user_id) {
-        post.dataValues.liker = true;
-      }
-    });
+    post.dataValues.likes = likes;
 
     return res.json({ ok: true, post });
   } catch (error) {

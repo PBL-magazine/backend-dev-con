@@ -21,6 +21,7 @@ const signupValidator = (req, res, next) => {
     nickname: Joi.string().alphanum().min(3).max(30).required(),
     // TODO: [완료] 최소 4자이상, (닉네임과 같은 값이 포함된 경우 회원가입에 실패) => 별도 처리
     password: Joi.string().min(4).max(200).required(),
+    role: Joi.number(),
   });
 
   const options = {

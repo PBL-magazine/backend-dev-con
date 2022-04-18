@@ -59,8 +59,14 @@ const removeComment = async (req, res) => {
     user: { user_id },
   } = res.locals;
   const { post_id } = req.params;
+
   try {
-    await Comment.destroy({ where: { post_id, user_id } });
+    const user = await User.findOne({ where: user_id });
+    if (user.role === 1) {
+      await Comment.destroy({ where: { post_id } });
+    } else {
+      await Comment.destroy({ where: { post_id, user_id } });
+    }
 
     return res.json({ ok: true });
   } catch (error) {

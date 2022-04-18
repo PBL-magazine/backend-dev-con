@@ -94,12 +94,15 @@ const detailPost = async (req, res) => {
 };
 
 const editPost = async (req, res) => {
+  const {
+    user: { user_id },
+  } = res.locals;
   const { post_id } = req.params;
   const { content } = req.body;
   const { path: image } = req.file;
 
   try {
-    await Post.update({ content, image }, { where: { post_id } });
+    await Post.update({ content, image }, { where: { post_id, user_id } });
 
     return res.json({ ok: true });
   } catch (error) {
@@ -109,11 +112,24 @@ const editPost = async (req, res) => {
 };
 
 const removePost = async (req, res) => {
+  const {
+    user: { user_id },
+  } = res.locals;
   const { post_id } = req.params;
+
   try {
-    await Post.destroy({
-      where: { post_id },
-    });
+    const user = await User.findOne({ where: user_id });
+    if (user.role === 1) {
+      await Post.destroy({
+        where: { post_id },
+      });
+    } else {
+      await Post.destroy({
+        where: { post_id, user_id },
+      });
+    }
+
+    // TODO: 해당 POST가 없어서 삭제를 못한 경우 예외 처리 필요
 
     return res.json({ ok: true });
   } catch (error) {

@@ -6,7 +6,7 @@ dotenv.config();
 
 const signup = async (req, res) => {
   try {
-    const { email, nickname, password } = req.body;
+    const { email, nickname, password, role } = req.body;
 
     const checkEmail = await User.findOne({
       where: { email },
@@ -29,7 +29,7 @@ const signup = async (req, res) => {
       });
     }
 
-    await User.create({ email, nickname, password });
+    await User.create({ email, nickname, password, role });
     // 유저 생성 완료되었으므로 => 201 Created
     return res.status(201).json({ ok: true });
   } catch (error) {

@@ -43,7 +43,7 @@ const getPosts = async (req, res) => {
       }
     });
 
-    allPosts.map((post) => {
+    allPosts.forEach((post) => {
       post.dataValues.likes = likesTable[String(post.dataValues.post_id)];
       post.dataValues.liker = likerTable[String(post.dataValues.post_id)];
     });

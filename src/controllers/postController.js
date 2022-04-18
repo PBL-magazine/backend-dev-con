@@ -53,7 +53,7 @@ const uploadPost = async (req, res) => {
     // TODO: content, image, user_id 중 하나라도 없으면 예외 처리
     await Post.create({ content, image, user_id });
     // 포스트 생성 완료되었으므로 => 201 Created
-    return res.status(201).json({});
+    return res.status(201).json({ ok: true });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request
     return res.status(400).json({ ok: false, message: error.message });

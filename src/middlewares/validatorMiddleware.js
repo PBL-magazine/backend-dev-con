@@ -62,7 +62,7 @@ const signinValidator = (req, res, next) => {
 const postValidator = (req, res, next) => {
   const postSchema = Joi.object({
     content: Joi.string().required(),
-    user_id: Joi.number(),
+    // user_id: Joi.number(),
   });
 
   const { error, value } = postSchema.validate(req.body);
@@ -76,4 +76,25 @@ const postValidator = (req, res, next) => {
   }
 };
 
-module.exports = { signupValidator, signinValidator, postValidator };
+const commentValidator = (req, res, next) => {
+  const commentSchema = Joi.object({
+    content: Joi.string().required(),
+  });
+
+  const { error, value } = commentSchema.validate(req.body);
+
+  if (error) {
+    // 내용이 string이 아닌경우 => 400 Bad Request (string이 아닌경우가 있나?)
+    return res.status(400).send({ ok: false, message: error.message });
+  } else {
+    req.body = value;
+    next();
+  }
+};
+
+module.exports = {
+  signupValidator,
+  signinValidator,
+  postValidator,
+  commentValidator,
+};

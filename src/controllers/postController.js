@@ -67,9 +67,7 @@ const detailPost = async (req, res) => {
     const [post, likes] = await Promise.all([
       Post.findOne({
         attributes: { exclude: ["user_id", "deletedAt"] },
-        where: {
-          post_id,
-        },
+        where: { post_id },
         include: {
           model: User,
           as: "author",
@@ -101,17 +99,7 @@ const editPost = async (req, res) => {
   const { path: image } = req.file;
 
   try {
-    await Post.update(
-      {
-        content,
-        image,
-      },
-      {
-        where: {
-          post_id,
-        },
-      }
-    );
+    await Post.update({ content, image }, { where: { post_id } });
 
     return res.json({ ok: true });
   } catch (error) {

@@ -2,6 +2,7 @@ const express = require("express");
 const { sequelize } = require("./models");
 const userRouter = require("./routes/userRouter");
 const postRouter = require("./routes/postRouter");
+const commentRouter = require("./routes/commentRouter");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/users", userRouter);
 app.use("/api/posts", postRouter);
+app.use("/api/posts/:post_id/comments", commentRouter);
 
 app.get("/", (req, res) => {
   return res.send("hello");

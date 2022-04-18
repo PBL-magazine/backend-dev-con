@@ -5,7 +5,7 @@ const Comment = require("./comment");
 const Like = require("./like");
 
 const env = process.env.NODE_ENV || "development";
-const config = require("src/config/config.js")[env];
+const config = require("../config/config.js")[env];
 const db = {};
 
 const sequelize = new Sequelize(

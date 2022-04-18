@@ -1,24 +1,15 @@
 const express = require("express");
-const userRouter = express.Router();
-const {
-  protectorMiddleware,
-  notSigninMiddleware,
-} = require("../middlewares/protectorMiddleware");
+const { notSigninMiddleware } = require("../middlewares/protectorMiddleware");
 const {
   signupValidator,
   signinValidator,
 } = require("../middlewares/validatorMiddleware");
-
 const { signup, signin } = require("../controllers/userController");
 
+const userRouter = express.Router();
+
+// TODO: [요구사항 3-3] 로그인한 사용자가 회원가입 또는 로그인 페이지 접근시 예외처리 (notSigninMiddleware 미들웨어 적용했음)
 userRouter.post("/signup", notSigninMiddleware, signupValidator, signup);
 userRouter.post("/signin", notSigninMiddleware, signinValidator, signin);
-
-// TODO: user 받아오는지 확인 => 삭제할 것
-userRouter.get("/me", protectorMiddleware, async (req, res) => {
-  const { user } = res.locals;
-  console.log(`/me 유저 확인: ${user.user_id}`);
-  return res.status(400).send({ user });
-});
 
 module.exports = userRouter;

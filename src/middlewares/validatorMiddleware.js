@@ -1,7 +1,8 @@
 const Joi = require("joi");
 
+/* 회원가입시 입력값 검증 */
 const signupValidator = (req, res, next) => {
-  // TODO: [완료] 비밀번호에 닉네임과 같은 값이 포함된 경우 에러 던지기
+  // TODO: [요구사항 1-2] 비밀번호에 닉네임과 같은 값이 포함된 경우 에러 던지기
   const { nickname, password } = req.body;
   const checkPassIncludesNick = (pw) => {
     if (pw.includes(nickname))
@@ -15,13 +16,13 @@ const signupValidator = (req, res, next) => {
   }
 
   const signupSchema = Joi.object({
-    // TODO: [완료] 이메일 형식
     email: Joi.string().email().max(30).required(),
-    // TODO: [완료] 최소 3자 이상, 알파벳 대소문자(a~z, A~Z), 숫자(0~9)
+    // TODO: [요구사항 1-1] 최소 3자 이상, 알파벳 대소문자(a~z, A~Z), 숫자(0~9)
     nickname: Joi.string().alphanum().min(3).max(30).required(),
-    // TODO: [완료] 최소 4자이상, (닉네임과 같은 값이 포함된 경우 회원가입에 실패) => 별도 처리
+    // TODO: [요구사항 1-2] 최소 4자이상, (닉네임과 같은 값이 포함된 경우 회원가입에 실패) => 별도 처리
     password: Joi.string().min(4).max(200).required(),
     role: Joi.number(),
+    // TODO: [요구사항 1-3] 비밀번호 확인 => 프런트에서 처리하기로 협의
   });
 
   const options = {
@@ -39,6 +40,7 @@ const signupValidator = (req, res, next) => {
   }
 };
 
+/* 로그인시 입력값 검증 */
 const signinValidator = (req, res, next) => {
   const signinSchema = Joi.object({
     email: Joi.string().email().max(30).required(),
@@ -60,6 +62,7 @@ const signinValidator = (req, res, next) => {
   }
 };
 
+/* 게시글 작성시 입력값 검증 */
 const postValidator = (req, res, next) => {
   const postSchema = Joi.object({
     content: Joi.string().required(),
@@ -77,6 +80,7 @@ const postValidator = (req, res, next) => {
   }
 };
 
+/* 댓글 작성시 입력값 검증 */
 const commentValidator = (req, res, next) => {
   const commentSchema = Joi.object({
     content: Joi.string().required(),

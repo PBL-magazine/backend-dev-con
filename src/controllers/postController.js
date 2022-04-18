@@ -2,6 +2,7 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const Like = require("../models/like");
 
+/* 게시글 전체 조회 기능 */
 const getPosts = async (req, res) => {
   try {
     // 포스트, 라이크 테이블 조회를 병렬적으로 처리하기 위해 Promise.all 적용
@@ -17,10 +18,10 @@ const getPosts = async (req, res) => {
       Like.findAll({}),
     ]);
 
-    // 좋아요 수 포스트에 저장하기
+    // 좋아요 데이터 포스트에 저장하기
     // 1. 좋아요 테이블 생성
     // 2. 좋아요 테이블 돌면서, 좋아요 테이블에 post_id 별 좋아요 로우를 배열로 저장
-    // 3. 포스트 테이블 돌면서, post_id 별 좋아요 배열을 저장
+    // 3. 포스트 테이블 돌면서, post_id 별 좋아요 배열을 할당
     const likesTable = {}; // { '1': [like] }
 
     allLikes.forEach((like) => {
@@ -42,6 +43,7 @@ const getPosts = async (req, res) => {
   }
 };
 
+/* 게시글 등록 기능 */
 const uploadPost = async (req, res) => {
   const {
     user: { user_id },
@@ -50,7 +52,6 @@ const uploadPost = async (req, res) => {
   const { path: image } = req.file;
 
   try {
-    // TODO: content, image, user_id 중 하나라도 없으면 예외 처리
     await Post.create({ content, image, user_id });
     // 포스트 생성 완료되었으므로 => 201 Created
     return res.status(201).json({ ok: true });
@@ -60,6 +61,7 @@ const uploadPost = async (req, res) => {
   }
 };
 
+/* 특정 게시글 조회 기능 */
 const detailPost = async (req, res) => {
   const { post_id } = req.params;
 
@@ -83,7 +85,7 @@ const detailPost = async (req, res) => {
         .json({ ok: false, message: "게시글이 존재하지 않습니다." });
     }
 
-    // 좋아요 수, 좋아요한 사람인지 여부 post에 저장
+    // 좋아요 데이터 post에 저장
     post.dataValues.likes = likes;
 
     return res.json({ ok: true, post });
@@ -93,6 +95,7 @@ const detailPost = async (req, res) => {
   }
 };
 
+/* 게시글 수정 기능 */
 const editPost = async (req, res) => {
   const {
     user: { user_id },
@@ -111,6 +114,7 @@ const editPost = async (req, res) => {
   }
 };
 
+/* 게시글 삭제 기능 */
 const removePost = async (req, res) => {
   const {
     user: { user_id },
@@ -119,17 +123,12 @@ const removePost = async (req, res) => {
 
   try {
     const user = await User.findOne({ where: user_id });
+    // TODO: [요구사항 6] 관리자 권한 추가하여 모든 게시글, 댓글 삭제 가능하도록 (user의 role이 1이면 post_id만으로 삭제가능)
     if (user.role === 1) {
-      await Post.destroy({
-        where: { post_id },
-      });
+      await Post.destroy({ where: { post_id } });
     } else {
-      await Post.destroy({
-        where: { post_id, user_id },
-      });
+      await Post.destroy({ where: { post_id, user_id } });
     }
-
-    // TODO: 해당 POST가 없어서 삭제를 못한 경우 예외 처리 필요
 
     return res.json({ ok: true });
   } catch (error) {

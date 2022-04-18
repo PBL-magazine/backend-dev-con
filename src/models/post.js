@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require("sequelize");
 
+/* 포스트 테이블 생성을 위한 모델 정의 */
 class Post extends Model {
   static init(sequelize) {
     return super.init(

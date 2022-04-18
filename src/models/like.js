@@ -1,5 +1,6 @@
 const { Model } = require("sequelize");
 
+/* 좋아요 테이블 생성을 위한 모델 정의 */
 class Like extends Model {
   static init(sequelize) {
     return super.init(
@@ -8,8 +9,8 @@ class Like extends Model {
         sequelize,
         modelName: "Like",
         tableName: "likes",
-        timestamps: false, // createdAt, updatedAt 자동생성
-        paranoid: false, // deletedAt 자동생성
+        timestamps: false,
+        paranoid: false,
         underscored: true, // 테이블명, 컬럼명 스네이크 케이스 적용 여부 (false: 케멀케이스)
         charset: "utf8",
         collate: "utf8_general_ci",

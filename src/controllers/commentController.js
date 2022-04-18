@@ -2,10 +2,10 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const Comment = require("../models/comment");
 
+/* 게시글에 달란 댓글 조회 기능 */
 const getComments = async (req, res) => {
   const { post_id } = req.params;
   try {
-    // 포스트, 라이크 테이블 조회를 병렬적으로 처리하기 위해 Promise.all 적용
     const comments = await Comment.findAll({
       where: { post_id },
       attributes: { exclude: ["deletedAt"] },
@@ -19,13 +19,13 @@ const getComments = async (req, res) => {
   }
 };
 
+/* 게시글에 댓글 등록 기능 */
 const uploadComment = async (req, res) => {
   const {
     user: { user_id },
   } = res.locals;
   const { post_id } = req.params;
   const { content } = req.body;
-  // TODO: user_id, post_id, content 중 하나라도 없으면 예외 처리
 
   try {
     await Comment.create({ user_id, post_id, content });
@@ -37,6 +37,7 @@ const uploadComment = async (req, res) => {
   }
 };
 
+/* 게시글에 달린 댓글 수정 기능 */
 const editComment = async (req, res) => {
   const {
     user: { user_id },
@@ -54,6 +55,7 @@ const editComment = async (req, res) => {
   }
 };
 
+/* 게시글에 달린 댓글 삭제 기능 */
 const removeComment = async (req, res) => {
   const {
     user: { user_id },
@@ -61,6 +63,7 @@ const removeComment = async (req, res) => {
   const { post_id } = req.params;
 
   try {
+    // TODO: [요구사항 6] 관리자 권한 추가하여 모든 게시글, 댓글 삭제 가능하도록 (user의 role이 1이면 comment_id만으로 삭제가능)
     const user = await User.findOne({ where: user_id });
     if (user.role === 1) {
       await Comment.destroy({ where: { post_id } });

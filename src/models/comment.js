@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require("sequelize");
 
+/* 댓글 테이블 생성을 위한 모델 정의 */
 class Comment extends Model {
   static init(sequelize) {
     return super.init(

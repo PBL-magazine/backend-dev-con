@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const { sequelize } = require("./models");
 const userRouter = require("./routes/userRouter");
 const postRouter = require("./routes/postRouter");
@@ -6,6 +7,8 @@ const commentRouter = require("./routes/commentRouter");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors({ credentials: true }));
 
 sequelize
   .sync({ force: true }) // TODO: true => 테이블 드랍후 재생성, 배포시 false로 수정

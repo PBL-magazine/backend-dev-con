@@ -28,6 +28,6 @@ postRouter
   .delete(protectorMiddleware, removePost);
 
 // TODO: [요구사항 3-2] 로그인하지 않은 사용자가, 좋아요 누른 경우 예외처리 (미들웨어 적용했음)
-postRouter.patch("/:post_id/like", protectorMiddleware, toggleLike);
+postRouter.put("/:post_id/like", protectorMiddleware, toggleLike);
 
 module.exports = postRouter;

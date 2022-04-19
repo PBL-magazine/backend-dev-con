@@ -42,11 +42,11 @@ const editComment = async (req, res) => {
   const {
     user: { user_id },
   } = res.locals;
-  const { post_id } = req.params;
+  const { comment_id } = req.params;
   const { content } = req.body;
 
   try {
-    await Comment.update({ content }, { where: { user_id, post_id } });
+    await Comment.update({ content }, { where: { user_id, comment_id } });
 
     return res.json({ ok: true });
   } catch (error) {
@@ -60,15 +60,15 @@ const removeComment = async (req, res) => {
   const {
     user: { user_id },
   } = res.locals;
-  const { post_id } = req.params;
+  const { comment_id } = req.params;
 
   try {
     // TODO: [요구사항 6] 관리자 권한 추가하여 모든 게시글, 댓글 삭제 가능하도록 (user의 role이 1이면 comment_id만으로 삭제가능)
     const user = await User.findOne({ where: user_id });
     if (user.role === 1) {
-      await Comment.destroy({ where: { post_id } });
+      await Comment.destroy({ where: { comment_id } });
     } else {
-      await Comment.destroy({ where: { post_id, user_id } });
+      await Comment.destroy({ where: { user_id, comment_id } });
     }
 
     return res.json({ ok: true });

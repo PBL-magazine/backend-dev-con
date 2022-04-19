@@ -9,7 +9,10 @@ const getComments = async (req, res) => {
     const comments = await Comment.findAll({
       where: { post_id },
       attributes: { exclude: ["deletedAt"] },
-      include: [{ model: User }, { model: Post }],
+      include: [
+        { model: User, attributes: ["user_id", "email", "nickname", "role"] },
+        { model: Post, attributes: ["post_id"] },
+      ],
     });
 
     return res.json({ ok: true, comments });

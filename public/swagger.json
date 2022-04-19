@@ -12,11 +12,11 @@
   "servers": [
     {
       "url": "http://13.125.120.76/api",
-      "description": "EC2"
+      "description": "EC2 (배포)"
     },
     {
       "url": "http://localhost:3000/api",
-      "description": "로컬"
+      "description": "로컬 (개발)"
     }
   ],
   "tags": [
@@ -72,59 +72,13 @@
         },
         "responses": {
           "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Created"
           },
           "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "default": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "입력 형식 확인 요망"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Bad Request (입력 형식 확인 요망)"
           },
           "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "default": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "사용자가 이미 존재함"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Conflict (사용자가 이미 존재함)"
           },
           "500": {
             "description": "Internal Server Error"

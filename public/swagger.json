@@ -216,9 +216,6 @@
         ],
         "summary": "전체 게시물 조회",
         "description": "DB에 등록된 모든 포스트를 조회",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
             "description": "Ok"

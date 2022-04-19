@@ -1,0 +1,708 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PBL-magazine-api-server",
+    "description": "항해99 주특기 2-3주차 API 서버",
+    "contact": {
+      "name": "GitHub 놀러오세요 :)",
+      "url": "https://github.com/PBL-magazine/backend-coco"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://13.125.120.76/api",
+      "description": "EC2"
+    },
+    {
+      "url": "http://localhost:3000/api",
+      "description": "로컬"
+    }
+  ],
+  "tags": [
+    {
+      "name": "user",
+      "description": "회원가입/ 로그인 API"
+    },
+    {
+      "name": "post",
+      "description": "게시물 작성/ 조회(All or One)/ 수정/ 삭제 API"
+    },
+    {
+      "name": "like",
+      "description": "게시물 좋아요 API"
+    },
+    {
+      "name": "comment",
+      "description": "댓글 작성/ 조회/ 수정/ 삭제 API"
+    }
+  ],
+  "paths": {
+    "/users/signup": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "사용자 회원가입",
+        "description": "email, nickname, password로 회원가입",
+        "requestBody": {
+          "description": "회원가입 폼 작성",
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "이메일 입력"
+                  },
+                  "nickname": {
+                    "type": "string",
+                    "description": "닉네임 입력"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "비밀번호 입력"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "입력 형식 확인 요망"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "사용자가 이미 존재함"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/signin": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "사용자 로그인",
+        "description": "email, password로 로그인",
+        "requestBody": {
+          "description": "로그인 폼 작성",
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "이메일 입력"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "비밀번호 입력"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "400": {
+            "description": "Bad Request (입력 형식 확인 요망)"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 실패)"
+          },
+          "404": {
+            "description": "Not Found (사용자 정보를 찾을 수 없음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/auth": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "사용자 인증 확인",
+        "description": "토큰 값으로 인증 후 유저 데이터 반환",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 필요)"
+          },
+          "404": {
+            "description": "Not Found (사용자 정보가 존재하지 않음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/posts": {
+      "post": {
+        "tags": [
+          "post"
+        ],
+        "summary": "게시물 생성",
+        "description": "게시물 이미지 및 내용 등록",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "requestBody": {
+          "description": "게시물 생성",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "게시물 내용 입력"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "게시물 이미지 업로드"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created (포스트 생성 완료)"
+          },
+          "400": {
+            "description": "Bad Request (입력 형식 확인 요망)"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 필요)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "post"
+        ],
+        "summary": "전체 게시물 조회",
+        "description": "DB에 등록된 모든 포스트를 조회",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "post_id": {
+                      "type": "integer"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/posts/{post_id}": {
+      "get": {
+        "tags": [
+          "post"
+        ],
+        "summary": "특정 게시물 조회",
+        "description": "post_id 파라미터로 찾은 게시물 1개 리턴",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "포스트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "post"
+        ],
+        "summary": "특정 게시물 수정",
+        "description": "post_id 값으로 특정 게시물 찾아서 수정",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "포스트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "게시물 수정",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "게시물 내용 입력"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "게시물 이미지 업로드"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "400": {
+            "description": "Bad Request (입력 형식 확인 요망)"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 필요 또는 수정 권한 없음)"
+          },
+          "404": {
+            "description": "Not Found (게시물 정보를 찾을 수 없음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "post"
+        ],
+        "summary": "특정 게시물 삭제",
+        "description": "post_id 값으로 특정 게시물 찾아서 삭제",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "포스트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 필요 또는 삭제 권한 없음)"
+          },
+          "404": {
+            "description": "Not Found (게시물 정보를 찾을 수 없음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/posts/{post_id}/like": {
+      "put": {
+        "tags": [
+          "like"
+        ],
+        "summary": "특정 게시물 좋아요 상태 변경",
+        "description": "좋아요 테이블에 좋아요 등록/삭제",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "포스트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 필요)"
+          },
+          "404": {
+            "description": "Not Found (게시물 정보를 찾을 수 없음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/posts/{post_id}/comments": {
+      "post": {
+        "tags": [
+          "comment"
+        ],
+        "summary": "특정 게시물 댓글 생성",
+        "description": "content 데이터를 포함하여 댓글 생성",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "포스트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "댓글 등록",
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "댓글 내용 입력"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request (입력 형식 확인 요망)"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 필요)"
+          },
+          "404": {
+            "description": "Not Found (게시물 정보를 찾을 수 없음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "comment"
+        ],
+        "summary": "특정 게시물 전체 댓글 조회",
+        "description": "post_id 값을 기준으로 전체 댓글 조회",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "포스트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ok"
+          },
+          "404": {
+            "description": "Not Found (게시물 정보를 찾을 수 없음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/posts/{post_id}/comments/{comment_id}": {
+      "patch": {
+        "tags": [
+          "comment"
+        ],
+        "summary": "특정 게시물 댓글 수정",
+        "description": "post_id 값, comment_id 값으로 댓글 찾아서 content 데이터를 통해서 댓글 수정",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "포스트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "comment_id",
+            "in": "path",
+            "description": "코멘트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "댓글 수정",
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "수정할 댓글 내용 입력"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "400": {
+            "description": "Bad Request (입력 형식 확인 요망)"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 필요 또는 수정 권한 없음)"
+          },
+          "404": {
+            "description": "Not Found (게시물 또는 댓글 정보를 찾을 수 없음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "comment"
+        ],
+        "summary": "특정 게시물 댓글 삭제",
+        "description": "post_id 값, comment_id 값으로 댓글 찾아서 삭제",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "포스트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "comment_id",
+            "in": "path",
+            "description": "코멘트의 id 값",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "401": {
+            "description": "Unauthorized (로그인 필요 또는 삭제 권한 없음)"
+          },
+          "404": {
+            "description": "Not Found (게시물 또는 댓글 정보를 찾을 수 없음)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "jwt": {
+        "name": "authorization",
+        "in": "header",
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

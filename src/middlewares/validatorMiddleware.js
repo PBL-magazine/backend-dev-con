@@ -65,14 +65,14 @@ const signinValidator = (req, res, next) => {
 /* 게시글 작성시 입력값 검증 */
 const postValidator = (req, res, next) => {
   const postSchema = Joi.object({
-    content: Joi.string().required(),
-    // user_id: Joi.number(),
+    content: Joi.string().allow(""), // 게시글 수정시 내용없을 수 있으므로 공란 허용
+    image: Joi.string().allow(""),
   });
 
   const { error, value } = postSchema.validate(req.body);
 
   if (error) {
-    // 내용이 string이 아닌경우 => 400 Bad Request (string이 아닌경우가 있나?)
+    // 검증 불합격시 => 400 Bad Request
     return res.status(400).send({ ok: false, message: error.message });
   } else {
     req.body = value;

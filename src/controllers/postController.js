@@ -102,7 +102,7 @@ const editPost = async (req, res) => {
   } = res.locals;
   const { post_id } = req.params;
   let { content } = req.body;
-  let { path: image } = req.file;
+  let { path: image } = req.file || "";
 
   // 게시글 내용 또는 이미지 안보내줄 경우 기존 게시글 또는 이미지 사용
   if (!content || !image) {

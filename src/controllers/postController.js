@@ -101,8 +101,15 @@ const editPost = async (req, res) => {
     user: { user_id },
   } = res.locals;
   const { post_id } = req.params;
-  const { content } = req.body;
-  const { path: image } = req.file;
+  let { content } = req.body;
+  let { path: image } = req.file;
+
+  // 게시글 내용 또는 이미지 안보내줄 경우 기존 게시글 또는 이미지 사용
+  if (!content || !image) {
+    const post = await Post.findOne({ where: { post_id } });
+    if (!content) content = post.content;
+    if (!image) image = post.image;
+  }
 
   try {
     await Post.update({ content, image }, { where: { post_id, user_id } });

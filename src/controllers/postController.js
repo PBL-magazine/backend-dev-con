@@ -36,7 +36,7 @@ const getPosts = async (req, res) => {
       post.dataValues.likes = likesTable[String(post.dataValues.post_id)];
     });
 
-    return res.json({ ok: true, posts: allPosts });
+    return res.json({ ok: true, rows: allPosts });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request
     return res.status(400).json({ ok: false, message: error.message });
@@ -88,7 +88,7 @@ const detailPost = async (req, res) => {
     // 좋아요 데이터 post에 저장
     post.dataValues.likes = likes;
 
-    return res.json({ ok: true, post });
+    return res.json({ ok: true, row: post });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request
     return res.status(400).json({ ok: false, message: error.message });

@@ -17,7 +17,7 @@ userRouter.post("/signin", notSigninMiddleware, signinValidator, signin);
 
 userRouter.get("/auth", protectorMiddleware, async (req, res) => {
   const { user } = res.locals;
-  return res.status(200).send({ user });
+  return res.status(200).send({ ok: true, user });
 });
 
 module.exports = userRouter;

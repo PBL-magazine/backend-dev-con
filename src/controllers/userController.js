@@ -57,9 +57,13 @@ const signin = async (req, res) => {
       });
     }
 
-    return res.json({
-      token: jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET),
-    });
+    return res
+      .status(201)
+      .cookie(
+        "token",
+        jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET)
+      )
+      .json({ ok: true });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request
     return res.status(400).json({ ok: false, message: error.message });

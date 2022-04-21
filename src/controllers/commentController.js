@@ -15,7 +15,7 @@ const getComments = async (req, res) => {
       ],
     });
 
-    return res.json({ ok: true, comments });
+    return res.json({ ok: true, rows: comments });
   } catch (error) {
     // 클라이언트 요청에 문제가 있었다고 보고 => 400 Bad Request
     return res.status(400).json({ ok: false, message: error.message });

@@ -10,20 +10,21 @@ const signup = async (req, res) => {
   try {
     const { email, nickname, password, role } = req.body;
 
-    const checkEmail = await User.findOne({
+    const findUserByEmail = await User.findOne({
       where: { email },
     });
-    if (checkEmail !== null) {
+    if (findUserByEmail !== null) {
       // 이메일 사용중 => 409 Conflict
       return res.status(409).json({
         ok: false,
         message: "이메일이 이미 사용중입니다.",
       });
     }
-    const checkNickname = await User.findOne({
+
+    const findUserByNickname = await User.findOne({
       where: { nickname },
     });
-    if (checkNickname !== null) {
+    if (findUserByNickname !== null) {
       // 닉네임 사용중 => 409 Conflict
       return res.status(409).json({
         ok: false,

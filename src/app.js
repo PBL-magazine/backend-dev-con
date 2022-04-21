@@ -33,6 +33,13 @@ app.get("/", (req, res) => {
   return res.send("hello");
 });
 
-app.listen(PORT, () =>
-  console.log(`Server started at: http://localhost:${PORT}`)
-);
+// 진입 스크립트를 판단 (require.main => module | undefined)
+if (require.main === module) {
+  console.log(`노드에서 JS 파일 직접 실행: ${require.main}`);
+  app.listen(PORT, () =>
+    console.log(`Server started at: http://localhost:${PORT}`)
+  );
+} else {
+  // console.log(`다른 스크립트로 임포트된 경우: ${require.main}`);
+  module.exports = app;
+}

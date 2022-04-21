@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { User } = require("../models");
+// index.js에서 User를 불러오는경우 Sequelize 객체가 생성되기 전이라 테스트 실패
+// const { User } = require("../models");
+const User = require("../models/user");
 
 dotenv.config();
 
@@ -12,7 +14,8 @@ const protectorMiddleware = (req, res, next) => {
 
   if (!authToken || authType !== "Bearer") {
     // 로그인 확인 불가 => 401 Unauthorized
-    return res.status(401).send({
+    return res.status(401).json({
+      ok: false,
       errorMessage: "로그인이 필요합니다.",
     });
   }
@@ -25,7 +28,8 @@ const protectorMiddleware = (req, res, next) => {
     });
   } catch (error) {
     // 해당 유저 검증 불가 => 401 Unauthorized
-    return res.status(401).send({
+    return res.status(401).json({
+      ok: false,
       errorMessage: "로그인이 필요합니다.",
     });
   }

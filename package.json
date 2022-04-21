@@ -5,7 +5,9 @@
   "main": "src/app.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production PORT=80 pm2 start src/app.js -i 0",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -35,6 +37,8 @@
   },
   "devDependencies": {
     "eslint": "^8.13.0",
-    "nodemon": "^2.0.15"
+    "jest": "^27.5.1",
+    "nodemon": "^2.0.15",
+    "supertest": "^6.2.2"
   }
 }

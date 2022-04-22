@@ -9,31 +9,45 @@ beforeAll(async () => {
 const API_USERS = "/api/users";
 
 describe(`POST ${API_USERS}/signup`, () => {
-  test("회원가입 수행", async () => {
-    const res = await request(app)
+  test("회원가입 수행", (done) => {
+    request(app)
       .post(`${API_USERS}/signup`)
-      .send({ email: "coco1@gmail.com", nickname: "coco1", password: "1234" });
-    expect(res.statusCode).toBe(201);
+      .send({
+        email: "fullahead@gmail.com",
+        nickname: "coco",
+        password: "1234",
+      })
+      .expect(201, done);
+  });
+
+  test("사용 중인 닉네임으로 회원가입 수행", (done) => {
+    request(app)
+      .post(`${API_USERS}/signup`)
+      .send({
+        email: "coco@gmail.com",
+        nickname: "coco",
+        password: "1234",
+      })
+      .expect(409, done);
   });
 });
 
 describe(`POST ${API_USERS}/signin`, () => {
-  // const agent = request.agent(app);
-  test("로그인 수행", async () => {
-    const res = await request(app)
+  const agent = request.agent(app);
+
+  beforeEach((done) => {
+    agent
       .post(`${API_USERS}/signin`)
-      .send({ email: "coco1@gmail.com", password: "1234" });
-    expect(res.statusCode).toBe(201);
+      .send({ email: "coco@gmail.com", password: "1234" })
+      .end(done);
   });
 
-  // 사용중인 닉네임으로 로그인한 경우 테스트 작성
-
-  // test("이미 로그인된 경우", async () => {
-  //   const res = await agent
-  //     .post(`${API_USERS}/signin`)
-  //     .send({ email: "coco1@gmail.com", password: "1234" });
-  //   expect(res.statusCode).toBe(400);
-  // });
+  test("이미 로그인된 경우", (done) => {
+    agent
+      .post(`${API_USERS}/signin`)
+      .send({ email: "coco@gmail.com", password: "1234" })
+      .expect(400, done);
+  });
 });
 
 afterAll(async () => {

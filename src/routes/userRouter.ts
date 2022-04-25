@@ -1,13 +1,13 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   notSigninMiddleware,
   protectorMiddleware,
-} = require("../middlewares/protectorMiddleware");
-const {
+} from "../middlewares/protectorMiddleware";
+import {
   signupValidator,
   signinValidator,
-} = require("../middlewares/validatorMiddleware");
-const { signup, signin } = require("../controllers/userController");
+} from "../middlewares/validatorMiddleware";
+import { signin, signup } from "../controllers/userController";
 
 const userRouter = express.Router();
 
@@ -20,4 +20,4 @@ userRouter.get("/auth", protectorMiddleware, async (req, res) => {
   return res.status(200).send({ ok: true, user });
 });
 
-module.exports = userRouter;
+export default userRouter;

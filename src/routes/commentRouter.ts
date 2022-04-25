@@ -1,12 +1,12 @@
-const express = require("express");
-const {
-  getComments,
-  uploadComment,
+import express from "express";
+import { protectorMiddleware } from "../middlewares/protectorMiddleware";
+import { commentValidator } from "../middlewares/validatorMiddleware";
+import {
   editComment,
+  getComments,
   removeComment,
-} = require("../controllers/commentController");
-const { commentValidator } = require("../middlewares/validatorMiddleware");
-const { protectorMiddleware } = require("../middlewares/protectorMiddleware");
+  uploadComment,
+} from "../controllers/commentController";
 
 const commentRouter = express.Router({ mergeParams: true });
 
@@ -22,4 +22,4 @@ commentRouter
   .patch(protectorMiddleware, commentValidator, editComment)
   .delete(protectorMiddleware, removeComment);
 
-module.exports = commentRouter;
+export default commentRouter;

@@ -1,15 +1,16 @@
-const express = require("express");
-const upload = require("../middlewares/imageUploadMiddleware");
-const { protectorMiddleware } = require("../middlewares/protectorMiddleware");
-const { postValidator } = require("../middlewares/validatorMiddleware");
-const {
-  getPosts,
-  uploadPost,
+import upload from "../middlewares/imageUploadMiddleware";
+
+import {
   detailPost,
   editPost,
+  getPosts,
   removePost,
   toggleLike,
-} = require("../controllers/postController");
+  uploadPost,
+} from "../controllers/postController";
+import { postValidator } from "../middlewares/validatorMiddleware";
+import { protectorMiddleware } from "../middlewares/protectorMiddleware";
+import express from "express";
 
 const postRouter = express.Router();
 
@@ -30,4 +31,4 @@ postRouter
 // TODO: [요구사항 3-2] 로그인하지 않은 사용자가, 좋아요 누른 경우 예외처리 (미들웨어 적용했음)
 postRouter.put("/:post_id/like", protectorMiddleware, toggleLike);
 
-module.exports = postRouter;
+export default postRouter;

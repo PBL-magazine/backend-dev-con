@@ -1,9 +1,9 @@
-const express = require("express");
-const cors = require("cors");
-const { sequelize } = require("./models");
-const userRouter = require("./routes/userRouter");
-const postRouter = require("./routes/postRouter");
-const commentRouter = require("./routes/commentRouter");
+import express from "express";
+import cors from "cors";
+import commentRouter from "./routes/commentRouter";
+import postRouter from "./routes/postRouter";
+import userRouter from "./routes/userRouter";
+import db from "./models";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,12 +11,13 @@ const PORT = process.env.PORT || 3000;
 // TODO: [요구사항 5] cors 해결하기 (현재는 모든 요청 허용)
 app.use(cors({ credentials: true }));
 
-sequelize
+db.sequelize
   .sync({ force: false }) // true => 테이블 드랍후 재생성(배포시 false)
   .then(() => {
     console.log("DB connected");
   })
-  .catch((err) => {
+  .catch((err: any) => {
+    // TODO: any 타입
     console.log(err);
   });
 
@@ -29,7 +30,8 @@ app.use("/api/users", userRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/posts/:post_id/comments", commentRouter);
 
-app.get("/", (req, res) => {
+app.get("/", (req: any, res: any) => {
+  // TODO: any 타입
   return res.send("hello");
 });
 

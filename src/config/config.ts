@@ -1,4 +1,6 @@
-require("dotenv").config();
+import { config } from "dotenv";
+
+config();
 
 const production = {
   username: "root",
@@ -25,4 +27,15 @@ const test = {
   dialect: "mysql",
 };
 
-module.exports = { development, production, test };
+const sequelizeConfig = (env: string) => {
+  switch (env) {
+    case "production":
+      return production;
+    case "development":
+      return development;
+    case "test":
+      return test;
+  }
+};
+
+export default sequelizeConfig;

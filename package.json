@@ -2,10 +2,9 @@
   "name": "backend-coco",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.js",
+  "main": "dist/app.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production PORT=80 pm2 start src/app.js -i 0",
-    "dev": "nodemon app.js",
+    "dev": "ts-node ./src/app.ts",
     "test": "jest",
     "coverage": "jest --coverage"
   },
@@ -36,9 +35,16 @@
     "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/multer": "^1.4.7",
+    "@types/node": "^17.0.26",
     "eslint": "^8.13.0",
     "jest": "^27.5.1",
     "nodemon": "^2.0.15",
-    "supertest": "^6.2.2"
+    "supertest": "^6.2.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
   }
 }

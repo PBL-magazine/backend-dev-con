@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
+    "start": "node ./dist/app.js",
     "dev": "ts-node ./src/app.ts",
     "test": "jest",
     "coverage": "jest --coverage"

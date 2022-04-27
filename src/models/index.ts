@@ -1,17 +1,22 @@
-const Sequelize = require("sequelize");
-const User = require("./user");
-const Post = require("./post");
-const Comment = require("./comment");
-const Like = require("./like");
+import { Sequelize } from "sequelize";
+import User from "./user";
+import Post from "./post";
+import Comment from "./comment";
+import Like from "./like";
+
+import sequelizeConfig from "../config/config";
 
 const env = process.env.NODE_ENV || "development";
-const config = require("../../config/config.js")[env];
-const db = {};
+const config = sequelizeConfig(env);
+// TODO: any 타입 수정
+const db: any = {};
 
+// TODO: non-null assertion, ts-ignore
 const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
+  config!.database,
+  config!.username,
+  config!.password,
+  // @ts-ignore
   config
 );
 
@@ -32,4 +37,4 @@ Post.associate(db);
 Comment.associate(db);
 Like.associate(db);
 
-module.exports = db;
+export default db;

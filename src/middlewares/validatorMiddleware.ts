@@ -1,16 +1,21 @@
-const Joi = require("joi");
+import Joi from "joi";
+import { Request, Response, NextFunction } from "express";
 
 /* 회원가입시 입력값 검증 */
-const signupValidator = (req, res, next) => {
+export const signupValidator = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // TODO: [요구사항 1-2] 비밀번호에 닉네임과 같은 값이 포함된 경우 에러 던지기
   const { nickname, password } = req.body;
-  const checkPassIncludesNick = (pw) => {
+  const checkPassIncludesNick = (pw: any) => {
     if (pw.includes(nickname))
       throw new Error("비밀번호에 닉네임을 포함할 수 없습니다.");
   };
   try {
     checkPassIncludesNick(password);
-  } catch (error) {
+  } catch (error: any) {
     // 비밀번호를 잘못 요청한 경우 => 400 Bad Request
     return res.status(400).json({ ok: false, message: error.message });
   }
@@ -57,7 +62,11 @@ const signupValidator = (req, res, next) => {
 };
 
 /* 로그인시 입력값 검증 */
-const signinValidator = (req, res, next) => {
+export const signinValidator = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const signinSchema = Joi.object({
     email: Joi.string().email().max(30).required(),
     password: Joi.string().min(4).max(200).required(),
@@ -79,7 +88,11 @@ const signinValidator = (req, res, next) => {
 };
 
 /* 게시글 작성시 입력값 검증 */
-const postValidator = (req, res, next) => {
+export const postValidator = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const postSchema = Joi.object({
     content: Joi.string().allow(""), // 게시글 수정시 내용없을 수 있으므로 공란 허용
     image: Joi.string().allow(""),
@@ -97,7 +110,11 @@ const postValidator = (req, res, next) => {
 };
 
 /* 댓글 작성시 입력값 검증 */
-const commentValidator = (req, res, next) => {
+export const commentValidator = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const commentSchema = Joi.object({
     content: Joi.string().required(),
   });
@@ -111,11 +128,4 @@ const commentValidator = (req, res, next) => {
     req.body = value;
     next();
   }
-};
-
-module.exports = {
-  signupValidator,
-  signinValidator,
-  postValidator,
-  commentValidator,
 };

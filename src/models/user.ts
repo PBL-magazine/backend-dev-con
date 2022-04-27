@@ -1,8 +1,11 @@
-const { DataTypes, Model } = require("sequelize");
+import { DataTypes, Model } from "sequelize";
 
 /* 유저 테이블 생성을 위한 모델 정의 */
+// @ts-ignore
 class User extends Model {
+  // @ts-ignore
   static init(sequelize) {
+    // @ts-ignore
     return super.init(
       {
         user_id: {
@@ -43,6 +46,7 @@ class User extends Model {
     );
   }
 
+  // @ts-ignore
   static associate(db) {
     db.User.hasMany(db.Post, {
       foreignKey: "user_id",
@@ -59,4 +63,4 @@ class User extends Model {
   }
 }
 
-module.exports = User;
+export default User;

@@ -1,6 +1,6 @@
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+import multer from "multer";
+import fs from "fs";
+import path from "path";
 
 try {
   fs.readdirSync("uploads");
@@ -22,4 +22,4 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-module.exports = upload;
+export default upload;

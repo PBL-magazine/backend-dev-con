@@ -1,8 +1,11 @@
-const { Model } = require("sequelize");
+import { Model } from "sequelize";
 
 /* 좋아요 테이블 생성을 위한 모델 정의 */
+// @ts-ignore
 class Like extends Model {
+  // @ts-ignore
   static init(sequelize) {
+    // @ts-ignore
     return super.init(
       {},
       {
@@ -18,6 +21,7 @@ class Like extends Model {
     );
   }
 
+  // @ts-ignore
   static associate(db) {
     db.Like.belongsTo(db.User, {
       foreignKey: "user_id",
@@ -31,4 +35,4 @@ class Like extends Model {
   }
 }
 
-module.exports = Like;
+export default Like;

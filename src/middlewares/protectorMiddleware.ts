@@ -1,14 +1,16 @@
-const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-// index.js에서 User를 불러오는경우 Sequelize 객체가 생성되기 전이라 테스트 실패
-// const { User } = require("../models");
-const User = require("../models/user");
+import dotenv from "dotenv";
+import User from "../models/user";
+import { Request, Response, NextFunction } from "express";
 
 dotenv.config();
 
 // TODO: [요구사항 4] 본인이 선택한 Status Code의 반환 이유를 설명하기
 /* 로그인 여부 확인하여 예외 처리 */
-const protectorMiddleware = (req, res, next) => {
+export const protectorMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { authorization } = req.headers;
   const [authType, authToken] = (authorization || "").split(" ");
 
@@ -21,7 +23,9 @@ const protectorMiddleware = (req, res, next) => {
   }
 
   try {
+    // @ts-ignore
     const { userId } = jwt.verify(authToken, process.env.JWT_SECRET);
+    // @ts-ignore
     User.findByPk(userId).then((user) => {
       res.locals.user = user;
       next();
@@ -36,7 +40,11 @@ const protectorMiddleware = (req, res, next) => {
 };
 
 /* 로그인 여부 확인하여 예외 처리 (비로그인시 통과) */
-const notSigninMiddleware = (req, res, next) => {
+export const notSigninMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { authorization } = req.headers;
   const [authType, authToken] = (authorization || "").split(" ");
 
@@ -50,9 +58,4 @@ const notSigninMiddleware = (req, res, next) => {
       .status(400)
       .json({ ok: false, message: "이미 로그인이 되어 있습니다." });
   }
-};
-
-module.exports = {
-  protectorMiddleware,
-  notSigninMiddleware,
 };

@@ -40,7 +40,7 @@ export const getPosts = async (req: Request, res: Response) => {
 
     allPosts.forEach((post) => {
       // @ts-ignore
-      post.dataValues.likes = likesTable[String(post.dataValues.post_id)];
+      post.dataValues.likes = likesTable[String(post.dataValues.post_id)] || []; // 라이크없으면 빈 배열이라도 발송
     });
 
     return res.json({ ok: true, rows: allPosts });

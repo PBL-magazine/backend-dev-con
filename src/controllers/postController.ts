@@ -78,7 +78,7 @@ export const detailPost = async (req: Request, res: Response) => {
     const [post, likes] = await Promise.all([
       // @ts-ignore
       Post.findOne({
-        attributes: { exclude: ["user_id", "deletedAt"] },
+        attributes: { exclude: ["deletedAt"] },
         where: { post_id },
         include: {
           model: User,

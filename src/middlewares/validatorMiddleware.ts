@@ -42,6 +42,12 @@ export const signupValidator = (
       "string.min": "비밀번호는 최소 4자 이상 입력해 주세요",
       "string.max": "비밀번호는 최대 20자 까지 입력해 주세요",
     }),
+    confirmPassword: Joi.string().min(4).max(20).required().messages({
+      "any.required": "비밀번호를 입력해 주세요.",
+      "string.empty": "비밀번호를 입력해 주세요.",
+      "string.min": "비밀번호는 최소 4자 이상 입력해 주세요",
+      "string.max": "비밀번호는 최대 20자 까지 입력해 주세요",
+    }),
     role: Joi.number(),
     // TODO: [요구사항 1-3] 비밀번호 확인 => 프런트에서 처리하기로 협의
   });

@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import User from "../models/user";
 import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ export const protectorMiddleware = (
 
   if (!authToken || authType !== "Bearer") {
     // 로그인 확인 불가 => 401 Unauthorized
+    console.log("로그인 확인 불가");
     return res.status(401).json({
       ok: false,
       errorMessage: "로그인이 필요합니다.",
@@ -23,15 +25,19 @@ export const protectorMiddleware = (
   }
 
   try {
+    console.log("try구문 시작");
     // @ts-ignore
     const { userId } = jwt.verify(authToken, process.env.JWT_SECRET);
+    console.log(`userId ${userId}`);
     // @ts-ignore
     User.findByPk(userId).then((user) => {
+      console.log(`user: ${user}`);
       res.locals.user = user;
       next();
     });
   } catch (error) {
     // 해당 유저 검증 불가 => 401 Unauthorized
+    console.log("유저 검증 불가");
     return res.status(401).json({
       ok: false,
       errorMessage: "로그인이 필요합니다.",
